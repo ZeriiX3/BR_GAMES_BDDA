@@ -23,7 +23,6 @@ Avant de commencer, assurez-vous que **Node.js** est installé sur votre machine
    ```bash
    cd proj/backend
    npm install
-   npm install pg
    ```
 
 
