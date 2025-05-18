@@ -1,7 +1,7 @@
-// backend/routes/offres.routes.js
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
+const jwt = require('jsonwebtoken');
 
 // Voir les offres disponibles
 router.get('/', async (req, res) => {
@@ -31,32 +31,32 @@ router.post('/ajouter', async (req, res) => {
   }
 });
 
-// Donner un avis
-router.post('/avis', async (req, res) => {
-  const { id_avis, contenue_avis, note_jeu, id_jeu, id_utilisateur } = req.body;
-  try {
-    await db.avis_jeux.create({
-      id_avis,
-      contenue_avis,
-      note_jeu,
-      date_avis: new Date(),
-      id_jeu,
-      id_utilisateur
-    });
-    res.status(201).json({ message: "Avis enregistré." });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Supprimer une offre
+// Supprimer une offre (seulement si c’est l’utilisateur qui l’a créée)
 router.delete('/:id_offre', async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'Token manquant' });
+
+  const token = authHeader.split(' ')[1];
+
   try {
-    const id = req.params.id_offre;
-    await db.offres.destroy({ where: { id_offre: id } });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id_utilisateur = decoded.id || decoded.id_utilisateur;
+    const id_offre = req.params.id_offre;
+
+    const offre = await db.offres.findOne({ where: { id_offre } });
+
+    if (!offre) {
+      return res.status(404).json({ error: "Offre introuvable" });
+    }
+
+    if (offre.id_utilisateur !== id_utilisateur) {
+      return res.status(403).json({ error: "Vous n'avez pas le droit de supprimer cette offre" });
+    }
+
+    await db.offres.destroy({ where: { id_offre } });
     res.status(200).json({ message: "Offre supprimée." });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Erreur serveur ou token invalide" });
   }
 });
 
