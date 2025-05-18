@@ -32,7 +32,7 @@ router.get('/recents', async (req, res) => {
   }
 });
 
-// Fonction : Jeux par catégorie (fonction SQL)
+// Fonction : Jeux par catégorie 
 router.get('/categorie/:nom', async (req, res) => {
   const nomCat = req.params.nom;
   try {
@@ -48,3 +48,15 @@ router.get('/categorie/:nom', async (req, res) => {
 });
 
 module.exports = router;
+
+// Nouvelle route pour obtenir toutes les catégories
+router.get('/categories', async (req, res) => {
+  try {
+    const categories = await db.categories.findAll({
+      attributes: ['nom_cat'] 
+    });
+    res.json(categories);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
