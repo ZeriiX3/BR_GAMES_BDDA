@@ -1,3 +1,4 @@
+// backend/controllers/auth.controller.js
 const db = require("../models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -16,6 +17,7 @@ exports.register = async (req, res) => {
       id_utilisateur: `U${Math.floor(Math.random() * 100000)}`,
       pseudo: username,
       password: hashedPassword,
+      role: role || 'user', // Ajout du rôle ici
       date_inscription: new Date(),
     });
 
@@ -39,11 +41,15 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Mot de passe incorrect" });
     }
 
-    const token = jwt.sign({ id: user.id_utilisateur }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user.id_utilisateur, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: "24h",
     });
 
-    res.status(200).json({ message: "Connexion réussie", token });
+    res.status(200).json({
+      message: "Connexion réussie",
+      token,
+      role: user.role, // ← Renvoi du rôle au frontend
+    });
   } catch (error) {
     res.status(500).json({ message: "Erreur serveur", error: error.message });
   }

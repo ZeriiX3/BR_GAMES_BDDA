@@ -1,8 +1,8 @@
 <template>
   <div class="hero-section">
     <div class="hero-text">
-      <h1>Welcome to PARFUMERIE BABASSE</h1>
-      <p>Discover our exclusive collection of perfumes and enjoy the best offers.</p>
+      <h1>Welcome to BRGAMES</h1>
+      <p>Discover our exclusive collection of games and enjoy the best offers.</p>
       <router-link to="/products">
         <button class="explore-btn">Explore Products</button>
       </router-link>
