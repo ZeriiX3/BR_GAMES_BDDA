@@ -10,13 +10,12 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "Utilisateur déjà existant" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await db.utilisateurs.create({
       id_utilisateur: `U${Math.floor(Math.random() * 100000)}`,
       pseudo: username,
-      password: hashedPassword,
-      role: role || 'user', // Ajout du rôle ici
+      password: password,
+      role: role || 'user', 
       date_inscription: new Date(),
     });
 
