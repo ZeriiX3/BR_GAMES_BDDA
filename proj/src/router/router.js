@@ -1,18 +1,21 @@
+// frontend/router.js
 import { createRouter, createWebHistory } from 'vue-router';
 import store from '../store/store.js';
 import Home from '../components/Home.vue';
 import ProductList from '../components/ProductList.vue';
-import Cart from '../components/Cart.vue';
+import Cart from '../components/Cart.vue'; // sera supprimé plus tard
 import ManageProduct from '../components/ManageProduct.vue';
 import Login from '../components/Login.vue';
 import ManageUsers from '../components/ManageUsers.vue';
+import Offres from '../components/Offres.vue';
 
 const routes = [
   { path: '/', component: Home },
   { path: '/products', component: ProductList },
   { path: '/cart', component: Cart, meta: { requiresAuth: true } },
+  { path: '/offres', component: Offres, meta: { requiresAuth: true } },
   { path: '/manage-products', component: ManageProduct, meta: { requiresAdmin: true } },
-  { path: '/manage-users', component: ManageUsers, meta: { requiresAdmin: true } }, 
+  { path: '/manage-users', component: ManageUsers, meta: { requiresAdmin: true } },
   { path: '/login', component: Login, meta: { requiresGuest: true } },
 ];
 

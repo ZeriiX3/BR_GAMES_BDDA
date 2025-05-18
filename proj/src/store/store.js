@@ -7,6 +7,7 @@ const store = createStore({
   state: {
     products: [],
     cart: [],
+    pendingOffers: [],
     isAuthenticated: false,
     userRole: '',
   },
@@ -32,6 +33,16 @@ const store = createStore({
     clearCart(state) {
       state.cart = [];
     },
+    addPendingOffer(state, product) {
+      const already = state.pendingOffers.find(p => p.id_jeu === product.id_jeu);
+      if (!already) state.pendingOffers.push(product);
+    },
+    removePendingOffer(state, productId) {
+      state.pendingOffers = state.pendingOffers.filter(p => p.id_jeu !== productId);
+    },
+    clearPendingOffers(state) {
+      state.pendingOffers = [];
+    }
   },
   actions: {
     async fetchProducts({ commit }) {
@@ -48,6 +59,7 @@ const store = createStore({
     logout({ commit }) {
       commit('setAuthentication', { isAuthenticated: false, userRole: '' });
       commit('clearCart');
+      commit('clearPendingOffers');
     },
     addToCart({ commit }, product) {
       commit('addToCart', product);
@@ -55,6 +67,12 @@ const store = createStore({
     removeFromCart({ commit }, productId) {
       commit('removeFromCart', productId);
     },
+    addPendingOffer({ commit }, product) {
+      commit('addPendingOffer', product);
+    },
+    removePendingOffer({ commit }, productId) {
+      commit('removePendingOffer', productId);
+    }
   },
   getters: {
     getProducts(state) {
@@ -62,6 +80,9 @@ const store = createStore({
     },
     getCart(state) {
       return state.cart;
+    },
+    getPendingOffers(state) {
+      return state.pendingOffers;
     },
     isAuthenticated(state) {
       return state.isAuthenticated;

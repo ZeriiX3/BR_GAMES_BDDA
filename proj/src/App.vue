@@ -2,12 +2,12 @@
   <div id="app">
     <header>
       <nav class="navbar">
-        <div class="logo">PARFUMERIE BABASSE</div>
+        <div class="logo">BR GAMES</div>
         <ul class="nav-links">
           <li><router-link to="/">Home</router-link></li>
           <li><router-link to="/products">Products</router-link></li>
 
-          <li v-if="isAuthenticated"><router-link to="/cart">Cart</router-link></li>
+          <li v-if="isAuthenticated"><router-link to="/offres">Offres</router-link></li>
 
           <li v-if="isAuthenticated && userRole === 'admin'">
             <router-link to="/manage-products">Manage Product</router-link>

@@ -42,7 +42,6 @@
     <div v-else class="product-grid">
       <div v-for="jeu in filteredProducts" :key="jeu.id_jeu" class="product-item">
         <img :src="`/images/${jeu.image_jeu || 'placeholder.png'}`" alt="Image jeu" />
-
         <h2>{{ jeu.nom_jeu }}</h2>
         <p>{{ jeu.description_jeu }}</p>
         <p>Éditeur : {{ jeu.editeur }}</p>
@@ -53,7 +52,7 @@
           v-if="isAuthenticated" 
           @click="handleAddToCart(jeu)"
         >
-          Ajouter au panier
+          Ajouter aux offres
         </button>
         <button v-else disabled>Connectez-vous pour ajouter</button>
       </div>
@@ -86,10 +85,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['addToCart']),
+    ...mapActions(['addPendingOffer']),
     async handleAddToCart(produit) {
-      this.addToCart(produit);
-      this.addToCartMessage = `${produit.nom_jeu} ajouté au panier !`;
+      this.addPendingOffer(produit);
+      this.addToCartMessage = `${produit.nom_jeu} ajouté pour une future offre !`;
       setTimeout(() => {
         this.addToCartMessage = '';
       }, 3000);
@@ -101,7 +100,7 @@ export default {
         this.produitsFiltres = res.data;
         this.selectedCategorie = '';
       } catch (err) {
-        console.error('Erreur de chargement des jeux :', err);
+        console.error('Erreur chargement jeux :', err);
       }
     },
     async appliquerFiltre(type) {

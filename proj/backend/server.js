@@ -20,11 +20,14 @@ app.use(bodyParser.json());
 const authRoutes = require('./routes/auth.routes');
 const utilisateursRoutes = require('./routes/utilisateurs.routes');
 const jeuxRoutes = require('./routes/jeux.routes');
+const offresRoutes = require('./routes/offres.routes');
+
 
 // Use routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', utilisateursRoutes);
 app.use('/api/jeux', jeuxRoutes);
+app.use('/api/offres', offresRoutes);
 
 // Connect to Supabase without sync
 db.sequelize.authenticate()
