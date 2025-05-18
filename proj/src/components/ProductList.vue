@@ -2,6 +2,11 @@
   <div class="product-list">
     <h1>Nos Jeux</h1>
 
+    <!-- Message de succès -->
+    <div v-if="addToCartMessage" class="success-message">
+      {{ addToCartMessage }}
+    </div>
+
     <!-- Barre de recherche -->
     <input
       type="text"
@@ -28,21 +33,29 @@
       </select>
     </div>
 
-    <!-- Message si aucun produit -->
+    <!-- Aucun produit -->
     <div v-if="filteredProducts.length === 0">
       Aucun jeu trouvé...
     </div>
 
-    <!-- Grille de jeux -->
+    <!-- Grille produits -->
     <div v-else class="product-grid">
       <div v-for="jeu in filteredProducts" :key="jeu.id_jeu" class="product-item">
-        <img :src="`/images/${jeu.image || 'placeholder.webp'}`" alt="Image jeu" />
+        <img :src="`/images/${jeu.image_jeu || 'placeholder.png'}`" alt="Image jeu" />
+
         <h2>{{ jeu.nom_jeu }}</h2>
         <p>{{ jeu.description_jeu }}</p>
         <p>Éditeur : {{ jeu.editeur }}</p>
         <p>Âge minimum : {{ jeu.minage }} ans</p>
         <p>Année de publication : {{ jeu.yearpublished }}</p>
-        <button disabled>Connectez-vous pour ajouter</button>
+
+        <button 
+          v-if="isAuthenticated" 
+          @click="handleAddToCart(jeu)"
+        >
+          Ajouter au panier
+        </button>
+        <button v-else disabled>Connectez-vous pour ajouter</button>
       </div>
     </div>
   </div>
@@ -50,6 +63,7 @@
 
 <script>
 import axios from 'axios';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'ProductList',
@@ -59,10 +73,12 @@ export default {
       produitsFiltres: [],
       categories: [],
       selectedCategorie: '',
-      searchQuery: ''
+      searchQuery: '',
+      addToCartMessage: ''
     };
   },
   computed: {
+    ...mapGetters(['isAuthenticated']),
     filteredProducts() {
       return this.produitsFiltres.filter(p =>
         p.nom_jeu.toLowerCase().includes(this.searchQuery.toLowerCase())
@@ -70,39 +86,43 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['addToCart']),
+    async handleAddToCart(produit) {
+      this.addToCart(produit);
+      this.addToCartMessage = `${produit.nom_jeu} ajouté au panier !`;
+      setTimeout(() => {
+        this.addToCartMessage = '';
+      }, 3000);
+    },
     async chargerProduits() {
       try {
-        const response = await axios.get('http://localhost:3000/api/jeux');
-        this.produits = response.data;
-        this.produitsFiltres = response.data;
+        const res = await axios.get('http://localhost:3000/api/jeux');
+        this.produits = res.data;
+        this.produitsFiltres = res.data;
         this.selectedCategorie = '';
-      } catch (error) {
-        console.error("Erreur de chargement des jeux :", error);
+      } catch (err) {
+        console.error('Erreur de chargement des jeux :', err);
       }
     },
     async appliquerFiltre(type) {
       let url = 'http://localhost:3000/api/jeux';
-
-      if (type === 'recents') {
-        url += '/recents';
-      } else if (type === 'bien-notes') {
-        url += '/bien-notes';
-      }
+      if (type === 'recents') url += '/recents';
+      else if (type === 'bien-notes') url += '/bien-notes';
 
       try {
-        const response = await axios.get(url);
-        this.produitsFiltres = response.data;
+        const res = await axios.get(url);
+        this.produitsFiltres = res.data;
         this.selectedCategorie = '';
-      } catch (error) {
-        console.error("Erreur lors de l'application du filtre :", error);
+      } catch (err) {
+        console.error('Erreur filtre :', err);
       }
     },
     async chargerCategories() {
       try {
         const res = await axios.get('http://localhost:3000/api/jeux/categories');
         this.categories = res.data.map(c => c.nom_cat);
-      } catch (error) {
-        console.error("Erreur lors du chargement des catégories :", error);
+      } catch (err) {
+        console.error('Erreur chargement catégories :', err);
       }
     },
     async appliquerCategorie() {
@@ -110,8 +130,8 @@ export default {
       try {
         const res = await axios.get(`http://localhost:3000/api/jeux/categorie/${encodeURIComponent(this.selectedCategorie)}`);
         this.produitsFiltres = res.data;
-      } catch (error) {
-        console.error("Erreur lors du filtre par catégorie :", error);
+      } catch (err) {
+        console.error('Erreur filtre catégorie :', err);
       }
     }
   },
@@ -125,6 +145,20 @@ export default {
 <style scoped>
 .product-list {
   padding: 20px;
+}
+
+.success-message {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .search-bar {
@@ -187,8 +221,23 @@ export default {
 }
 
 .product-item button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.product-item button:hover {
+  background-color: #0056b3;
+}
+
+.product-item button:disabled {
   background-color: #ddd;
-  color: #666;
+  color: #888;
   cursor: not-allowed;
 }
 </style>

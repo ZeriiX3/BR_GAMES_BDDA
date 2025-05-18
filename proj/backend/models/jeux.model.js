@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     editeur: DataTypes.STRING,
     minage: DataTypes.SMALLINT,
     yearpublished: DataTypes.SMALLINT,
+    image_jeu: DataTypes.STRING,
   }, {
     tableName: 'jeux',
     timestamps: false,
