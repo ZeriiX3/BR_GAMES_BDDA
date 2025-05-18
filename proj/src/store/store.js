@@ -1,5 +1,7 @@
 import { createStore } from 'vuex';
 import axios from 'axios';
+import { API_URL } from '@/api';
+
 
 const store = createStore({
   state: {
@@ -34,7 +36,7 @@ const store = createStore({
   actions: {
     async fetchProducts({ commit }) {
       try {
-        const response = await axios.get('http://localhost:3000/api/products');
+        const response = await axios.get(`${API_URL}/products`);
         commit('setProducts', response.data);
       } catch (error) {
         console.error('Error fetching products:', error.message);

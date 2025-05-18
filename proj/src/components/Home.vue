@@ -1,11 +1,14 @@
 <template>
   <div class="hero-section">
     <div class="hero-text">
-      <h1>Welcome to BRGAMES</h1>
-      <p>Discover our exclusive collection of board games and enjoy the best offers.</p>
+      <h1>Welcome to PARFUMERIE BABASSE</h1>
+      <p>Discover our exclusive collection of perfumes and enjoy the best offers.</p>
       <router-link to="/products">
         <button class="explore-btn">Explore Products</button>
       </router-link>
+      <p class="eco-info">
+      We are committed to sustainability: optimized images, lazy loading, eco-friendly hosting, and minimal animations.
+      </p>
     </div>
   </div>
 </template>
@@ -23,7 +26,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: url('../assets/background.png') no-repeat center center/cover;
+  background: url('../assets/background.webp') no-repeat center center/cover;
   color: #fff;
   text-align: center;
   padding: 0 20px;
@@ -80,4 +83,16 @@ export default {
     font-size: 18px;
   }
 }
+
+.eco-info {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: #fff;
+  opacity: 0.8;
+  text-align: center;
+}
+
 </style>

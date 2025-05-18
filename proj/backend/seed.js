@@ -1,180 +1,246 @@
+require('dotenv').config(); // Charge .env
 const bcrypt = require('bcryptjs');
-const db = require('./models'); // Importing the models
+const db = require('./models'); 
 
 const seedDatabase = async () => {
   try {
-    // Synchronizing and resetting the database
-    await db.sequelize.sync({ force: true });
+    console.log('Synchronizing database...');
+    await db.sequelize.sync({ force: true }); // Reset tables
     console.log('Database synchronized.');
 
     // User data with hashed passwords
     const users = [
       {
         username: 'admin',
-        password: bcrypt.hashSync('admin123', 10),
+        password: bcrypt.hashSync('admin123', 10), // Hashing the password
         role: 'admin',
       },
       {
         username: 'admin2',
-        password: bcrypt.hashSync('admin1234', 10),
+        password: bcrypt.hashSync('admin1234', 10), // Hashing the password
         role: 'admin',
       },
       {
         username: 'user1',
-        password: bcrypt.hashSync('password1', 10),
+        password: bcrypt.hashSync('password1', 10), // Hashing the password
         role: 'user',
       },
     ];
 
+    // Inserting users
     await db.users.bulkCreate(users);
     console.log('Users inserted successfully.');
+    
 
-    // Board games data (17 jeux)
+    // Product data
     const products = [
       {
-        name: "Small World",
-        description: "Un jeu de conquête fantastique dans un monde trop petit pour tout le monde.",
-        price: 45.0,
-        image: "smallworld.png",
-        rating: 4.6,
+        name: "Dior J'adore",
+        description: 'Eau de parfum for women - Floral and fruity notes',
+        price: 108.0,
+        image: 'jadore.jpg',
+        rating: 4.5,
         stock: 20,
       },
       {
-        name: "It's a Wonderful World",
-        description: "Un jeu de draft et de gestion pour bâtir un empire prospère.",
-        price: 38.0,
-        image: "it-s-a-wonderful-world.png",
-        rating: 4.7,
+        name: 'Chanel N°5',
+        description: 'Timeless and elegant eau de parfum',
+        price: 122.0,
+        image: 'chanel5.jpg',
+        rating: 5,
         stock: 15,
       },
       {
-        name: "Les Aventuriers du Rail: Europe",
-        description: "Construisez des routes ferroviaires à travers l'Europe.",
-        price: 50.0,
-        image: "les-aventuriers-du-rail-europe.png",
-        rating: 4.8,
+        name: 'Armani Si',
+        description: 'Captivating and sophisticated perfume',
+        price: 107.0,
+        image: 'armani_si.jpg',
+        rating: 4.7,
+        stock: 25,
+      },
+      // Women's perfumes
+      {
+        name: "Yves Saint Laurent Mon Paris",
+        description: 'Fruity and floral fragrance with a touch of patchouli',
+        price: 130.0,
+        image: 'mon_paris.jpg',
+        rating: 4.6,
         stock: 18,
       },
       {
-        name: "Monopoly",
-        description: "Le classique jeu d'achat et d'immobilier.",
-        price: 30.0,
-        image: "monopoly-edition-2025.png",
-        rating: 4.2,
-        stock: 25,
-      },
-      {
-        name: "Mysterium",
-        description: "Résolvez un mystère en coopération avec un fantôme muet.",
-        price: 42.0,
-        image: "mysterium.png",
-        rating: 4.5,
-        stock: 14,
-      },
-      {
-        name: "Risk",
-        description: "Un jeu de stratégie militaire pour conquérir le monde.",
-        price: 35.0,
-        image: "risk.png",
-        rating: 4.3,
-        stock: 20,
-      },
-      {
-        name: "Saboteur",
-        description: "Un jeu de bluff et de stratégie dans une mine d’or.",
-        price: 15.0,
-        image: "saboteur.png",
-        rating: 4.4,
-        stock: 30,
-      },
-      {
-        name: "UNO",
-        description: "Le célèbre jeu de cartes rapide et familial.",
-        price: 10.0,
-        image: "uno.png",
-        rating: 4.7,
-        stock: 40,
-      },
-      {
-        name: "Jeu des 7 Familles",
-        description: "Un jeu de cartes éducatif et familial.",
-        price: 9.0,
-        image: "Jeu-des-7-familles-Ravensburger.png",
-        rating: 4.5,
-        stock: 35,
-      },
-      {
-        name: "Les Loups-Garous de Thiercelieux",
-        description: "Un jeu de rôle à identités secrètes pour animer vos soirées.",
-        price: 12.0,
-        image: "Loup garou.png",
-        rating: 4.6,
-        stock: 50,
-      },
-      {
-        name: "Cuisto Dingo",
-        description: "Un jeu d’action amusant où un cochon mange trop !",
-        price: 28.0,
-        image: "gu082964_6.png",
-        rating: 4.3,
+        name: 'Lancôme La Vie Est Belle',
+        description: 'Sweet and floral with iris, patchouli, and gourmand notes',
+        price: 125.0,
+        image: 'la_vie_est_belle.jpg',
+        rating: 4.8,
         stock: 22,
       },
       {
-        name: "Hanabi",
-        description: "Un jeu coopératif de mémoire et de communication pour créer un feu d'artifice.",
-        price: 20.0,
-        image: "hanabi.png",
-        rating: 4.5,
-        stock: 19,
-      },
-      {
-        name: "7 Wonders",
-        description: "Un jeu de civilisation stratégique en 30 minutes.",
-        price: 48.0,
-        image: "7-wonders-Asmodee.png",
-        rating: 4.9,
+        name: 'Gucci Bloom',
+        description: 'A bouquet of jasmine, tuberose, and rangoon creeper',
+        price: 115.0,
+        image: 'gucci_bloom.jpg',
+        rating: 4.3,
         stock: 17,
       },
       {
-        name: "Croque-Carotte",
-        description: "Un jeu de course pour enfants avec des pièges surprises.",
-        price: 26.0,
-        image: "13_231862_1_10_FR.png",
-        rating: 4.6,
-        stock: 23,
+        name: 'Chanel Coco Mademoiselle',
+        description: 'A fresh, modern interpretation of an oriental fragrance, with a blend of floral and fruity notes.',
+        price: 135.0,
+        image: 'coco_mademoiselle.jpg',
+        rating: 4.8,
+        stock: 20,
       },
       {
-        name: "Mille Bornes",
-        description: "Un jeu de cartes sur le thème de la course automobile.",
-        price: 22.0,
-        image: "511sFh4863L.png",
+        name: 'Jean Paul Gaultier Scandal',
+        description: 'A sweet and honeyed fragrance with a touch of floral, perfect for the bold and daring.',
+        price: 115.0,
+        image: 'scandal.jpg',
+        rating: 4.6,
+        stock: 22,
+      },
+      {
+        name: 'Prada La Femme',
+        description: 'An elegant and luxurious fragrance with notes of frangipani, tuberose, and beeswax.',
+        price: 125.0,
+        image: 'prada_la_femme.jpg',
+        rating: 4.7,
+        stock: 18,
+      },
+      {
+        name: 'Yves Saint Laurent Black Opium',
+        description: 'A deep and sensual fragrance with notes of coffee, vanilla, and white flowers.',
+        price: 130.0,
+        image: 'black_opium.jpg',
+        rating: 4.9,
+        stock: 15,
+      },
+      {
+        name: 'Burberry Her',
+        description: 'A fruity fragrance with notes of red berries, jasmine, and vanilla, creating a modern and vibrant scent.',
+        price: 105.0,
+        image: 'burberry_her.jpg',
+        rating: 4.4,
+        stock: 20,
+      },
+      // Men's perfumes
+      {
+        name: "Chanel Bleu de Chanel",
+        description: 'A woody aromatic fragrance with notes of citrus and woods',
+        price: 150.0,
+        image: 'bleu_de_chanel.jpg',
+        rating: 4.9,
+        stock: 30,
+      },
+      {
+        name: 'Dior Sauvage',
+        description: 'Fresh and spicy fragrance with notes of Calabrian bergamot and Sichuan pepper',
+        price: 140.0,
+        image: 'sauvage.jpg',
+        rating: 4.7,
+        stock: 25,
+      },
+      {
+        name: 'Tom Ford Noir Extreme',
+        description: 'Warm and spicy fragrance with notes of amber and vanilla',
+        price: 170.0,
+        image: 'noir_extreme.jpg',
+        rating: 4.6,
+        stock: 20,
+      },
+      {
+        name: 'Armani Code',
+        description: 'A blend of citrus and leather notes with a warm, spicy finish',
+        price: 125.0,
+        image: 'armani_code.jpg',
+        rating: 4.5,
+        stock: 30,
+      },
+      {
+        name: 'Paco Rabanne Invictus',
+        description: 'Woody and fresh with a hint of marine and grapefruit notes',
+        price: 110.0,
+        image: 'invictus.jpg',
         rating: 4.4,
         stock: 28,
       },
       {
-        name: "SOS Ouistiti",
-        description: "Évite de faire tomber les singes dans ce jeu d'adresse amusant.",
-        price: 18.0,
-        image: "a_02_9605-sos-ouistiti-mattel.png",
-        rating: 4.3,
-        stock: 26,
+        name: 'Hugo Boss Bottled',
+        description: 'A blend of apple, cinnamon, and vanilla with woody notes',
+        price: 95.0,
+        image: 'boss_bottled.jpg',
+        rating: 4.2,
+        stock: 35,
       },
       {
-        name: "Codenames",
-        description: "Un jeu d'association de mots où les espions doivent se retrouver.",
-        price: 25.0,
-        image: "codenames.png",
+        name: 'Bvlgari Man in Black',
+        description: 'A bold and sensual fragrance with leather, spices, and rum notes.',
+        price: 150.0,
+        image: 'man_in_black.jpg',
+        rating: 4.6,
+        stock: 18,
+      },
+      {
+        name: 'Versace Eros',
+        description: 'A vibrant, fresh fragrance with mint, green apple, and lemon, combining fresh notes with woody undertones.',
+        price: 120.0,
+        image: 'eros.jpg',
+        rating: 4.7,
+        stock: 25,
+      },
+      {
+        name: 'Dolce & Gabbana The One',
+        description: 'A classic and elegant fragrance with notes of tobacco, amber, and cedarwood.',
+        price: 130.0,
+        image: 'the_one.jpg',
         rating: 4.8,
+        stock: 22,
+      },
+      {
+        name: 'Creed Aventus',
+        description: 'A sophisticated fragrance with notes of pineapple, birch, and musk, evoking confidence and strength.',
+        price: 300.0,
+        image: 'aventus.jpg',
+        rating: 4.9,
+        stock: 15,
+      },
+      {
+        name: 'Issey Miyake L\'Eau d\'Issey Pour Homme',
+        description: 'A fresh and aquatic fragrance with hints of yuzu, tarragon, and sandalwood.',
+        price: 95.0,
+        image: 'leau_dissey.jpg',
+        rating: 4.5,
         stock: 30,
-      }
+      },
+      {
+        name: 'Bvlgari Aqva Pour Homme',
+        description: 'A refreshing and aquatic fragrance with notes of citrus, posidonia, and amber.',
+        price: 120.0,
+        image: 'aqva_pour_homme.jpg',
+        rating: 4.6,
+        stock: 20,
+      },
+      {
+        name: 'Giorgio Armani Acqua di Giò',
+        description: 'A fresh and aromatic fragrance with notes of jasmine, rosemary, and patchouli.',
+        price: 140.0,
+        image: 'acqua_di_gio.jpg',
+        rating: 4.7,
+        stock: 22,
+      },
     ];
-
+    
+    
+    
+    // Inserting products
     await db.products.bulkCreate(products);
-    console.log('Board games inserted successfully.');
+    console.log('Products inserted successfully.');
 
+    // Success message for database seeding
     console.log('Database seeded successfully!');
     process.exit();
   } catch (error) {
+    // Error handling
     console.error('Error while seeding the database:', error);
     process.exit(1);
   }

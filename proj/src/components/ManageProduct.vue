@@ -26,7 +26,7 @@
     <div class="product-grid">
       <div v-if="products.length === 0">No products available.</div>
       <div v-else class="product-item" v-for="product in products" :key="product.id">
-        <img :src="`/images/${product.image}`" alt="Product Image" />
+        <img :src="`/images/${product.image}.webp`" alt="Product Image" loading = lazy />
         <h2>{{ product.name }}</h2>
         <p>{{ product.description }}</p>
         <p>Price: {{ product.price }} €</p>
@@ -41,6 +41,8 @@
 <script>
 import { mapState } from 'vuex';
 import axios from 'axios';
+import { API_URL } from '@/api';
+
 
 export default {
   name: 'ManageProduct',
@@ -83,7 +85,7 @@ export default {
       formData.append('image', this.product.image);  // Attach the image file
 
       try {
-        const response = await axios.post('http://localhost:3000/api/products', formData, {
+        const response = await axios.post(`${API_URL}/products`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
 
@@ -107,7 +109,7 @@ export default {
     // Remove product from database
     async removeProduct(productId) {
       try {
-        await axios.delete(`http://localhost:3000/api/products/${productId}`);
+        await axios.delete(`${API_URL}/products/${productId}`);
         this.showMessage('Product removed successfully!', 'success');
         this.$store.dispatch('fetchProducts');  // Refresh product list after deletion
       } catch (error) {
