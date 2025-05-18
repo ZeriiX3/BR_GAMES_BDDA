@@ -2,13 +2,12 @@ import { createStore } from 'vuex';
 import axios from 'axios';
 import { API_URL } from '@/api';
 
-
 const store = createStore({
   state: {
     products: [],
-    cart: [],  // Store cart items
-    isAuthenticated: false, // Track if user is logged in
-    userRole: '', // Track user role ('admin' or 'user')
+    cart: [],
+    isAuthenticated: false,
+    userRole: '',
   },
   mutations: {
     setProducts(state, products) {
@@ -16,30 +15,30 @@ const store = createStore({
     },
     setAuthentication(state, payload) {
       state.isAuthenticated = payload.isAuthenticated;
-      state.userRole = payload.userRole; // Update userRole on login
+      state.userRole = payload.userRole;
     },
     addToCart(state, product) {
-      const existingProduct = state.cart.find(item => item.id === product.id);
+      const existingProduct = state.cart.find(item => item.id_jeu === product.id_jeu);
       if (existingProduct) {
-        existingProduct.quantity++; // Increase quantity if product is already in cart
+        existingProduct.quantity++;
       } else {
         state.cart.push({ ...product, quantity: 1 });
       }
     },
     removeFromCart(state, productId) {
-      state.cart = state.cart.filter(item => item.id !== productId);
+      state.cart = state.cart.filter(item => item.id_jeu !== productId);
     },
     clearCart(state) {
-      state.cart = []; // Clear the cart on logout
+      state.cart = [];
     },
   },
   actions: {
     async fetchProducts({ commit }) {
       try {
-        const response = await axios.get(`${API_URL}/products`);
+        const response = await axios.get(`${API_URL}/jeux`);
         commit('setProducts', response.data);
       } catch (error) {
-        console.error('Error fetching products:', error.message);
+        console.error('Error fetching jeux:', error.message);
       }
     },
     login({ commit }, userData) {
@@ -47,7 +46,7 @@ const store = createStore({
     },
     logout({ commit }) {
       commit('setAuthentication', { isAuthenticated: false, userRole: '' });
-      commit('clearCart'); // Clear cart on logout
+      commit('clearCart');
     },
     addToCart({ commit }, product) {
       commit('addToCart', product);

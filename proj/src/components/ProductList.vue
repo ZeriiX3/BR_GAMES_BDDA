@@ -1,32 +1,31 @@
 <template>
   <div class="product-list">
-    <h1>Our Products</h1>
+    <h1>Nos Jeux</h1>
 
-    <!-- Success Message for adding product to cart -->
     <div v-if="addToCartMessage" class="success-message">
       {{ addToCartMessage }}
     </div>
 
-    <!-- Search bar -->
     <input 
       type="text" 
       v-model="searchQuery" 
-      placeholder="Search products by name..." 
+      placeholder="Rechercher un jeu par nom..." 
       class="search-bar"
     />
 
-    <div v-if="filteredProducts.length === 0">No products found...</div>
+    <div v-if="filteredProducts.length === 0">Aucun jeu trouvé...</div>
     
     <div v-else class="product-grid">
-      <div v-for="product in filteredProducts" :key="product.id" class="product-item">
-        <img :src="`/images/${product.image}.webp`" alt="Product Image" loading="lazy"/>
-        <h2>{{ product.name }}</h2>
-        <p>{{ product.description }}</p>
-        <p>Price: {{ product.price }} €</p>
-        <p>Rating: {{ product.rating }} / 5</p>
+      <div v-for="product in filteredProducts" :key="product.id_jeu" class="product-item">
+        <img :src="`/images/${product.image || 'default'}.webp`" alt="Image du jeu" loading="lazy"/>
+        <h2>{{ product.nom_jeu }}</h2>
+        <p>{{ product.description_jeu }}</p>
+        <p>Éditeur : {{ product.editeur }}</p>
+        <p>Âge minimum : {{ product.minage }} ans</p>
+        <p>Année de publication : {{ product.yearpublished }}</p>
 
-        <button v-if="isAuthenticated" @click="addToCart(product)">Add to Cart</button>
-        <button v-else disabled>Please log in to add to cart</button>
+        <button v-if="isAuthenticated" @click="addToCart(product)">Ajouter au panier</button>
+        <button v-else disabled>Connectez-vous pour ajouter</button>
       </div>
     </div>
   </div>
@@ -38,34 +37,30 @@ import { mapState, mapActions } from 'vuex';
 export default {
   data() {
     return {
-      searchQuery: '', // To hold the user's search input
-      addToCartMessage: '', // To display the success message when a product is added
+      searchQuery: '',
+      addToCartMessage: '',
     };
   },
   computed: {
-    ...mapState(['products', 'isAuthenticated']), // Access products and isAuthenticated from Vuex state
-    
-    // Filter products based on the search query
+    ...mapState(['products', 'isAuthenticated']),
     filteredProducts() {
       return this.products.filter(product => {
-        return product.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+        return product.nom_jeu.toLowerCase().includes(this.searchQuery.toLowerCase());
       });
     },
   },
   methods: {
-    ...mapActions(['fetchProducts', 'addToCart']), // Fetch products and add to cart action
-    
-    // Custom method to handle add to cart with success message
+    ...mapActions(['fetchProducts', 'addToCart']),
     async addToCart(product) {
-      await this.$store.dispatch('addToCart', product); // Add product to cart
-      this.addToCartMessage = `${product.name} added to the cart!`; // Set success message
+      await this.$store.dispatch('addToCart', product);
+      this.addToCartMessage = `${product.nom_jeu} ajouté au panier`;
       setTimeout(() => {
-        this.addToCartMessage = ''; // Hide the message after 3 seconds
+        this.addToCartMessage = '';
       }, 3000);
     },
   },
   created() {
-    this.fetchProducts(); // Fetch products when the component is created
+    this.fetchProducts();
   },
 };
 </script>
@@ -75,7 +70,6 @@ export default {
   padding: 20px;
 }
 
-/* Success Message Styling */
 .success-message {
   position: fixed;
   top: 10px;
@@ -122,29 +116,29 @@ export default {
 }
 
 .product-item button {
-  background-color: #007bff; /* Blue background for 'Add to Cart' */
+  background-color: #007bff;
   color: white;
   border: none;
-  padding: 12px 25px; /* Increased padding for a more prominent button */
+  padding: 12px 25px;
   font-size: 16px;
   cursor: pointer;
   border-radius: 5px;
-  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth hover effect */
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .product-item button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-  transform: scale(1.05); /* Slight zoom effect on hover */
+  background-color: #0056b3;
+  transform: scale(1.05);
 }
 
 .product-item button:disabled {
-  background-color: #ddd; /* Light gray for disabled button */
-  color: #888; /* Darker gray text for better readability */
+  background-color: #ddd;
+  color: #888;
   cursor: not-allowed;
 }
 
 .product-item button:disabled:hover {
-  background-color: #ddd; /* Keep the same color when disabled */
-  transform: none; /* Remove hover effect for disabled button */
+  background-color: #ddd;
+  transform: none;
 }
 </style>
