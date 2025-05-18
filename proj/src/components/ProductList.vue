@@ -2,12 +2,10 @@
   <div class="product-list">
     <h1>Nos Jeux</h1>
 
-    <!-- Message de succès -->
     <div v-if="addToCartMessage" class="success-message">
       {{ addToCartMessage }}
     </div>
 
-    <!-- Barre de recherche -->
     <input
       type="text"
       v-model="searchQuery"
@@ -15,45 +13,24 @@
       class="search-bar"
     />
 
-    <!-- Filtres boutons -->
     <div class="filters">
-      <button
-        @click="appliquerFiltre('recents')"
-        :class="{ actif: filtreActifKey === 'recents' }"
-      >
-        Jeux récents
-      </button>
-      <button
-        @click="appliquerFiltre('bien-notes')"
-        :class="{ actif: filtreActifKey === 'bien-notes' }"
-      >
-        Bien notés
-      </button>
-      <button
-        @click="chargerProduits"
-        :class="{ actif: filtreActifKey === '' }"
-      >
-        Réinitialiser
-      </button>
+      <button @click="appliquerFiltre('recents')" :class="{ actif: filtreActifKey === 'recents' }">Jeux récents</button>
+      <button @click="appliquerFiltre('bien-notes')" :class="{ actif: filtreActifKey === 'bien-notes' }">Bien notés</button>
+      <button @click="chargerProduits" :class="{ actif: filtreActifKey === '' }">Réinitialiser</button>
     </div>
 
-    <!-- Sélecteur de catégorie -->
     <div class="categorie-filter">
       <label for="categorie-select">Filtrer par catégorie :</label>
       <select id="categorie-select" v-model="selectedCategorie" @change="appliquerCategorie">
         <option disabled value="">-- Choisissez une catégorie --</option>
-        <option v-for="cat in categories" :key="cat" :value="cat">
-          {{ cat }}
-        </option>
+        <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
       </select>
     </div>
 
-    <!-- Aucun produit -->
     <div v-if="filteredProducts.length === 0" class="no-results">
       Aucun jeu trouvé...
     </div>
 
-    <!-- Grille produits -->
     <div v-else class="product-grid">
       <div v-for="jeu in filteredProducts" :key="jeu.id_jeu" class="product-item">
         <img :src="`/images/${jeu.image_jeu || 'placeholder.png'}`" alt="Image jeu" />
@@ -63,13 +40,36 @@
         <p><strong>Âge minimum :</strong> {{ jeu.minage }} ans</p>
         <p><strong>Année :</strong> {{ jeu.yearpublished }}</p>
 
-        <button 
-          v-if="isAuthenticated" 
-          @click="handleAddToCart(jeu)"
-        >
-          Ajouter aux offres
-        </button>
+        <button v-if="isAuthenticated" @click="handleAddToCart(jeu)">Ajouter aux offres</button>
         <button v-else disabled>Connectez-vous pour ajouter</button>
+
+        <button @click="afficherDetails(jeu)" class="details-button">Détails</button>
+      </div>
+    </div>
+
+    <div v-if="jeuSelectionne" class="details-panel">
+      <div class="details-content">
+        <h2>{{ jeuSelectionne.nom_jeu }}</h2>
+        <img :src="`/images/${jeuSelectionne.image_jeu || 'placeholder.png'}`" alt="Image détail" style="max-width: 100%; height: auto; margin-bottom: 10px;" />
+        <p><strong>Description :</strong> {{ jeuSelectionne.description_jeu }}</p>
+        <p><strong>Éditeur :</strong> {{ jeuSelectionne.editeur }}</p>
+        <p><strong>Âge minimum :</strong> {{ jeuSelectionne.minage }} ans</p>
+        <p><strong>Année de publication :</strong> {{ jeuSelectionne.yearpublished }}</p>
+        <p><strong>Catégories :</strong> {{ jeuSelectionne.categories?.join(', ') || 'Non spécifiées' }}</p>
+        <p><strong>Note moyenne :</strong> {{ typeof jeuSelectionne.moyenne_note === 'number' ? jeuSelectionne.moyenne_note.toFixed(1) : 'Non noté' }}/10</p>
+
+        <div v-if="jeuSelectionne.avis.length">
+          <h3 style="margin-top: 20px;">Avis</h3>
+          <div v-for="avis in jeuSelectionne.avis" :key="avis.id_avis" class="avis">
+            <p><strong>{{ avis.pseudo }}</strong> — {{ avis.note_jeu }}/10</p>
+            <p>{{ avis.contenue_avis }}</p>
+            <p style="font-size: 13px; color: #999;">({{ new Date(avis.date_avis).toLocaleDateString() }})</p>
+            <hr />
+          </div>
+        </div>
+        <p v-else>Aucun avis disponible.</p>
+
+        <button @click="fermerDetails" class="close-button">Fermer</button>
       </div>
     </div>
   </div>
@@ -89,7 +89,8 @@ export default {
       selectedCategorie: '',
       searchQuery: '',
       addToCartMessage: '',
-      filtreActifKey: ''
+      filtreActifKey: '',
+      jeuSelectionne: null
     };
   },
   computed: {
@@ -112,8 +113,22 @@ export default {
     async chargerProduits() {
       try {
         const res = await axios.get('http://localhost:3000/api/jeux');
-        this.produits = res.data;
-        this.produitsFiltres = res.data;
+        const produitsAvecDetails = await Promise.all(
+          res.data.map(async jeu => {
+            const [avis, cat] = await Promise.all([
+              axios.get(`http://localhost:3000/api/jeux/${jeu.id_jeu}/avis`).then(r => r.data).catch(() => []),
+              axios.get(`http://localhost:3000/api/jeux/${jeu.id_jeu}/categories`).then(r => r.data.map(c => c.nom_cat)).catch(() => [])
+            ]);
+            return {
+              ...jeu,
+              moyenne_note: avis.length ? avis.reduce((acc, a) => acc + a.note_jeu, 0) / avis.length : null,
+              categories: cat,
+              avis
+            };
+          })
+        );
+        this.produits = produitsAvecDetails;
+        this.produitsFiltres = produitsAvecDetails;
         this.selectedCategorie = '';
         this.filtreActifKey = '';
       } catch (err) {
@@ -128,7 +143,21 @@ export default {
 
       try {
         const res = await axios.get(url);
-        this.produitsFiltres = res.data;
+        const produitsAvecDetails = await Promise.all(
+          res.data.map(async jeu => {
+            const [avis, cat] = await Promise.all([
+              axios.get(`http://localhost:3000/api/jeux/${jeu.id_jeu}/avis`).then(r => r.data).catch(() => []),
+              axios.get(`http://localhost:3000/api/jeux/${jeu.id_jeu}/categories`).then(r => r.data.map(c => c.nom_cat)).catch(() => [])
+            ]);
+            return {
+              ...jeu,
+              moyenne_note: avis.length ? avis.reduce((acc, a) => acc + a.note_jeu, 0) / avis.length : null,
+              categories: cat,
+              avis
+            };
+          })
+        );
+        this.produitsFiltres = produitsAvecDetails;
         this.selectedCategorie = '';
       } catch (err) {
         console.error('Erreur filtre :', err);
@@ -146,11 +175,31 @@ export default {
       if (!this.selectedCategorie) return;
       try {
         const res = await axios.get(`http://localhost:3000/api/jeux/categorie/${encodeURIComponent(this.selectedCategorie)}`);
-        this.produitsFiltres = res.data;
-        this.filtreActifKey = ''; // réinitialiser les boutons
+        const produitsAvecDetails = await Promise.all(
+          res.data.map(async jeu => {
+            const [avis, cat] = await Promise.all([
+              axios.get(`http://localhost:3000/api/jeux/${jeu.id_jeu}/avis`).then(r => r.data).catch(() => []),
+              axios.get(`http://localhost:3000/api/jeux/${jeu.id_jeu}/categories`).then(r => r.data.map(c => c.nom_cat)).catch(() => [])
+            ]);
+            return {
+              ...jeu,
+              moyenne_note: avis.length ? avis.reduce((acc, a) => acc + a.note_jeu, 0) / avis.length : null,
+              categories: cat,
+              avis
+            };
+          })
+        );
+        this.produitsFiltres = produitsAvecDetails;
+        this.filtreActifKey = '';
       } catch (err) {
         console.error('Erreur filtre catégorie :', err);
       }
+    },
+    afficherDetails(jeu) {
+      this.jeuSelectionne = jeu;
+    },
+    fermerDetails() {
+      this.jeuSelectionne = null;
     }
   },
   mounted() {
@@ -286,11 +335,11 @@ h1 {
 }
 
 .product-item button {
-  margin-top: 12px;
+  margin-top: 8px;
   background-color: #007bff;
   color: white;
   border: none;
-  padding: 10px 16px;
+  padding: 10px 14px;
   font-size: 14px;
   border-radius: 6px;
   cursor: pointer;
@@ -305,5 +354,51 @@ h1 {
   background-color: #ccc;
   color: #666;
   cursor: not-allowed;
+}
+
+.details-button {
+  background-color: #6c757d;
+}
+
+.details-button:hover {
+  background-color: #5a6268;
+}
+
+.details-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 90%;
+  max-width: 500px;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  z-index: 2000;
+}
+
+.details-content h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.details-content p {
+  font-size: 15px;
+  margin: 8px 0;
+}
+
+.close-button {
+  margin-top: 20px;
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background-color: #c82333;
 }
 </style>
