@@ -17,7 +17,7 @@
     
     <div v-else class="product-grid">
       <div v-for="product in filteredProducts" :key="product.id_jeu" class="product-item">
-        <img :src="`/images/${product.image || 'default'}.webp`" alt="Image du jeu" loading="lazy"/>
+        <img :src="`/images/${product.image}`" alt="Product Image" />
         <h2>{{ product.nom_jeu }}</h2>
         <p>{{ product.description_jeu }}</p>
         <p>Éditeur : {{ product.editeur }}</p>

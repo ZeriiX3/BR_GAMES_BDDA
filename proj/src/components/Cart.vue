@@ -11,7 +11,7 @@
     <div v-else>
       <div v-for="item in cart" :key="item.id" class="cart-item">
         <div class="cart-item-details">
-          <img :src="`/images/${item.image}.webp`" alt="Product Image" class="cart-item-image" loading="lazy"/>
+          <img :src="`/images/${item.image}`" alt="Product Image" class="cart-item-image" loading="lazy"/>
           <div class="cart-item-info">
             <h3>{{ item.name }}</h3>
             <p>Price: €{{ item.price }}</p>

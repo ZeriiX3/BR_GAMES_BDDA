@@ -26,7 +26,7 @@
     <div class="product-grid">
       <div v-if="products.length === 0">No products available.</div>
       <div v-else class="product-item" v-for="product in products" :key="product.id">
-        <img :src="`/images/${product.image}.webp`" alt="Product Image" loading = lazy />
+        <img :src="`/images/${product.image}`" alt="Product Image" loading = lazy />
         <h2>{{ product.name }}</h2>
         <p>{{ product.description }}</p>
         <p>Price: {{ product.price }} €</p>
