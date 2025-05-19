@@ -4,22 +4,22 @@
       <nav class="navbar">
         <div class="logo">BR GAMES</div>
         <ul class="nav-links">
-          <li><router-link to="/">Home</router-link></li>
-          <li><router-link to="/products">Products</router-link></li>
+          <li><router-link to="/">Accueil</router-link></li>
+          <li><router-link to="/products">Produits</router-link></li>
 
-          <li v-if="isAuthenticated"><router-link to="/offres">Offres</router-link></li>
+          <li v-if="estAuthentifie"><router-link to="/offres">Offres</router-link></li>
 
-          <li v-if="isAuthenticated && userRole === 'admin'">
-            <router-link to="/manage-products">Manage Product</router-link>
+          <li v-if="estAuthentifie && roleUtilisateur === 'admin'">
+            <router-link to="/manage-products">Gérer les produits</router-link>
           </li>
 
-          <li v-if="isAuthenticated && userRole === 'admin'">
-            <router-link to="/manage-users">Manage Users</router-link>
+          <li v-if="estAuthentifie && roleUtilisateur === 'admin'">
+            <router-link to="/manage-users">Gérer les utilisateurs</router-link>
           </li>
 
-          <li v-if="!isAuthenticated"><router-link to="/login">Login</router-link></li>
+          <li v-if="!estAuthentifie"><router-link to="/login">Connexion</router-link></li>
 
-          <li v-else><button @click="handleLogout">Logout</button></li>
+          <li v-else><button @click="seDeconnecter">Déconnexion</button></li>
         </ul>
       </nav>
     </header>
@@ -34,12 +34,17 @@ import { mapState, mapActions } from 'vuex';
 export default {
   name: 'App',
   computed: {
-    ...mapState(['isAuthenticated', 'userRole']),
+    ...mapState({
+      estAuthentifie: 'isAuthenticated',
+      roleUtilisateur: 'userRole',
+    }),
   },
   methods: {
-    ...mapActions(['logout']),
-    async handleLogout() {
-      await this.logout(); 
+    ...mapActions({
+      deconnexion: 'logout',
+    }),
+    async seDeconnecter() {
+      await this.deconnexion();
       this.$router.push('/');
     },
   },

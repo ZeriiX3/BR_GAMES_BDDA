@@ -1,37 +1,37 @@
 <template>
   <div class="auth-container">
-    <h2>Authentication</h2>
+    <h2>Authentification</h2>
 
-    <!-- Admin info message -->
+    <!-- Message d'information admin -->
     <div class="info-message">
-      To manage products and users, you must have an admin account.
+      Pour gérer les produits et les utilisateurs, vous devez avoir un compte administrateur.
     </div>
 
-    <!-- Show success or error message -->
+    <!-- Message de succès ou d'erreur -->
     <div v-if="message" class="message" :class="messageType">
       {{ message }}
     </div>
 
-    <!-- Login form -->
+    <!-- Formulaire de connexion -->
     <div v-if="mode === 'login'">
-      <h3>Login</h3>
+      <h3>Connexion</h3>
       <form @submit.prevent="login">
-        <input v-model="username" type="text" placeholder="Username" required />
-        <input v-model="password" type="password" placeholder="Password" required />
-        <button type="submit">Login</button>
+        <input v-model="username" type="text" placeholder="Nom d'utilisateur" required />
+        <input v-model="password" type="password" placeholder="Mot de passe" required />
+        <button type="submit">Se connecter</button>
       </form>
-      <p @click="switchMode">Don't have an account? Sign up</p>
+      <p @click="switchMode">Vous n'avez pas de compte ? Créez-en un</p>
     </div>
 
-    <!-- Sign-up form -->
+    <!-- Formulaire d'inscription -->
     <div v-else>
-      <h3>Create an account</h3>
+      <h3>Créer un compte</h3>
       <form @submit.prevent="signup">
-        <input v-model="username" type="text" placeholder="Username" required />
-        <input v-model="password" type="password" placeholder="Password" required />
-        <button type="submit">Sign Up</button>
+        <input v-model="username" type="text" placeholder="Nom d'utilisateur" required />
+        <input v-model="password" type="password" placeholder="Mot de passe" required />
+        <button type="submit">S'inscrire</button>
       </form>
-      <p @click="switchMode">Already have an account? Login</p>
+      <p @click="switchMode">Vous avez déjà un compte ? Connectez-vous</p>
     </div>
   </div>
 </template>
@@ -65,10 +65,10 @@ export default {
 
         this.$router.push('/');
 
-        this.showMessage('Successfully logged in!', 'success');
+        this.showMessage('Connexion réussie !', 'success');
       } catch (error) {
-        console.error('Login error:', error.response?.data || error.message);
-        this.showMessage(error.response?.data?.message || 'Login failed.', 'error');
+        console.error('Erreur de connexion :', error.response?.data || error.message);
+        this.showMessage(error.response?.data?.message || 'Échec de la connexion.', 'error');
       }
     },
 
@@ -80,10 +80,10 @@ export default {
         });
 
         this.mode = 'login';
-        this.showMessage('Account created successfully! Please log in.', 'success');
+        this.showMessage('Compte créé avec succès ! Veuillez vous connecter.', 'success');
       } catch (error) {
-        console.error('Signup error:', error.response?.data || error.message);
-        this.showMessage(error.response?.data?.message || 'Signup failed.', 'error');
+        console.error('Erreur d’inscription :', error.response?.data || error.message);
+        this.showMessage(error.response?.data?.message || "Échec de l'inscription.", 'error');
       }
     },
 

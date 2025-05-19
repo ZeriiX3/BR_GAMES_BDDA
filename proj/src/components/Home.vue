@@ -1,13 +1,13 @@
 <template>
   <div class="hero-section">
     <div class="hero-text">
-      <h1>Welcome to BRGAMES</h1>
-      <p>Discover our exclusive collection of games and enjoy the best offers.</p>
+      <h1>Bienvenue chez BRGAMES</h1>
+      <p>Découvrez notre collection exclusive de jeux et profitez des meilleures offres.</p>
       <router-link to="/products">
-        <button class="explore-btn">Explore Products</button>
+        <button class="explore-btn">Explorer les produits</button>
       </router-link>
       <p class="eco-info">
-      We are committed to sustainability: optimized images, lazy loading, eco-friendly hosting, and minimal animations.
+        Nous sommes engagés pour la durabilité : images optimisées, chargement différé, hébergement éco-responsable et animations minimales.
       </p>
     </div>
   </div>
@@ -15,12 +15,12 @@
 
 <script>
 export default {
-  name: 'Home',
+  name: 'Home', 
 };
 </script>
 
 <style scoped>
-/* Hero section styling */
+/* Mise en forme de la section d'accueil */
 .hero-section {
   display: flex;
   justify-content: center;
@@ -94,5 +94,4 @@ export default {
   opacity: 0.8;
   text-align: center;
 }
-
 </style>
