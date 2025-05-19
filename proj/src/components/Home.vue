@@ -6,9 +6,6 @@
       <router-link to="/products">
         <button class="explore-btn">Explorer les produits</button>
       </router-link>
-      <p class="eco-info">
-        Nous sommes engagés pour la durabilité : images optimisées, chargement différé, hébergement éco-responsable et animations minimales.
-      </p>
     </div>
   </div>
 </template>
