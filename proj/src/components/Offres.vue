@@ -50,9 +50,27 @@
         >
           Supprimer
         </button>
+        <button
+          v-else-if="isAuthenticated && getUserIdFromToken() !== offre.id_utilisateur"
+          @click="ouvrirDetails(offre.id_offre)"
+          class="btn accept-btn"
+        >
+          Accepter
+        </button>
       </div>
     </div>
   </div>
+  <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
+  <div class="modal-content">
+    <h2>Détails du vendeur</h2>
+    <p><strong>ID utilisateur :</strong> {{ selectedUser.id_utilisateur }}</p>
+    <p><strong>Pseudo :</strong> {{ selectedUser.pseudo }}</p>
+    <p><strong>Email :</strong> {{ selectedUser.email }}</p>
+    <p><strong>Date d'inscription :</strong> {{ formatDate(selectedUser.date_inscription) }}</p>
+    <button class="btn secondary" @click="showModal = false">Fermer</button>
+  </div>
+</div>
+
 </template>
 
 <script>
@@ -66,7 +84,9 @@ export default {
       offres: [],
       prixOffres: {},
       successMessage: '',
-      errorMessage: ''
+      errorMessage: '',
+      selectedUser: null,
+      showModal: false
     };
   },
   computed: {
@@ -125,6 +145,7 @@ export default {
         return '';
       }
     },
+
     async supprimerOffre(id_offre) {
       const confirmation = confirm("Êtes-vous sûr de vouloir supprimer cette offre ?");
       if (!confirmation) return;
@@ -142,10 +163,22 @@ export default {
         this.showError("Impossible de supprimer l'offre.");
       }
     },
+
+    async ouvrirDetails(id_offre) {
+      try {
+        const res = await axios.get(`${API_URL}/utilisateurs/offre/${id_offre}`);
+        this.selectedUser = res.data;
+        this.showModal = true;
+      } catch (err) {
+        this.showError("Impossible de récupérer les informations du vendeur.");
+      }
+    },
+
     showSuccess(message) {
       this.successMessage = message;
       setTimeout(() => (this.successMessage = ''), 3000);
     },
+
     showError(message) {
       this.errorMessage = message;
       setTimeout(() => (this.errorMessage = ''), 4000);
@@ -326,7 +359,52 @@ h1, h2 {
   background-color: #495057;
 }
 
+.btn.delete-btn {
+  background-color: #dc3545;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 12px;
+}
+
+.btn.delete-btn:hover {
+  background-color: #bd2130; 
+}
+
 .delete-btn {
   margin-top: 12px;
 }
+
+.accept-btn{
+margin-top: 12px;
+}
+  
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
 </style>

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 
-// Route : moyenne des notes données par un utilisateur
+
 router.get('/:id/moyenne', async (req, res) => {
   const utilisateurID = req.params.id;
   try {
