@@ -1,11 +1,11 @@
-## 🛠️ Installation du projet
+## Installation du projet
 
 Avant de commencer, assurez-vous que **Node.js** est installé sur votre machine.  
 (Sinon, téléchargez-le depuis [https://nodejs.org/](https://nodejs.org/)).
 
 ---
 
-### 📦 Installation des dépendances
+### Installation des dépendances
 
 1. **Cloner le projet :**
    ```bash
