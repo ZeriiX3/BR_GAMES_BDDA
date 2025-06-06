@@ -1,4 +1,3 @@
-// frontend/store.js
 import { createStore } from 'vuex';
 import axios from 'axios';
 import { API_URL } from '@/api';

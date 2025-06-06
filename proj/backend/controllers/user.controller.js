@@ -35,11 +35,6 @@ exports.deleteUser = async (req, res) => {
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
     }
 
-    // Si tu veux ajouter un rôle un jour, remplace ceci par user.role
-    // if (user.role === 'admin') {
-    //   return res.status(403).json({ message: 'Impossible de supprimer un administrateur' });
-    // }
-
     await user.destroy();
     res.status(200).json({ message: 'Utilisateur supprimé avec succès' });
   } catch (error) {
